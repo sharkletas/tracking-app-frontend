@@ -8,6 +8,7 @@ import {
     ActionList,
     Icon,
     Badge,
+    Toast
 } from '@shopify/polaris';
 import {
     OrderIcon,
@@ -18,10 +19,11 @@ import {
     HomeIcon,
     DatabaseIcon,
     DataPresentationIcon,
+    RefreshIcon
 } from '@shopify/polaris-icons';
 import logo from './assets/logo.png';
 import '@shopify/polaris/build/esm/styles.css';
-import OrdersIndexTable from './OrdersIndexTable'; // Importar el componente
+import OrdersPage from './OrdersPage'; // Importar el componente
 
 function App() {
     const [selected, setSelected] = useState('home');
@@ -32,9 +34,22 @@ function App() {
 
     // Estado para almacenar el estado del backend
     const [backendStatus, setBackendStatus] = useState('Cargando...');
+    const [toastProps, setToastProps] = useState({ content: '', error: false, active: false });
 
     // Llamada al backend para verificar el estado
     const API_URL = 'https://tracking-app-backend-iab9.onrender.com';
+
+    const showToast = useCallback((options) => {
+        setToastProps({
+            content: options.content,
+            error: options.error || false,
+            active: true
+        });
+    }, []);
+
+    const handleToastDismiss = useCallback(() => {
+        setToastProps(prev => ({ ...prev, active: false }));
+    }, []);
 
     useEffect(() => {
         const fetchBackendStatus = async () => {
@@ -45,11 +60,16 @@ function App() {
             } catch (error) {
                 console.error('Error al conectar con el backend:', error);
                 setBackendStatus('Offline');
+                showToast({ content: 'Problemas de conexión con el servidor', error: true });
             }
         };
 
-        fetchBackendStatus();
-    }, []);
+        const interval = setInterval(fetchBackendStatus, 60000); // Actualiza cada minuto
+    
+        fetchBackendStatus(); // Ejecuta inmediatamente
+    
+        return () => clearInterval(interval); // Limpia el intervalo al desmontar
+    }, [showToast]);
 
     const toggleIsUserMenuOpen = useCallback(
         () => setIsUserMenuOpen((open) => !open),
@@ -127,7 +147,7 @@ function App() {
             <Navigation.Section
                 items={[
                     {
-                        label: 'Home',
+                        label: 'Inicio',
                         icon: HomeIcon,
                         onClick: () => setSelected('home'),
                         selected: selected === 'home',
@@ -162,18 +182,43 @@ function App() {
                         onClick: () => setSelected('trackingPage'),
                         selected: selected === 'trackingPage',
                     },
+                    {
+                        label: 'Status',
+                        icon: StatusActiveIcon,
+                        onClick: () => setSelected('status'),
+                        selected: selected === 'status',
+                    },
                 ]}
             />
+            {/* Footer del menú para el estado del servidor */}
+            <div
+                style={{
+                    marginTop: 'auto',
+                    padding: '1rem',
+                    textAlign: 'center',
+                    borderTop: '1px solid #e0e0e0',
+                    backgroundColor: '#f9fafb',
+                }}
+            >
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Icon source={DatabaseIcon} />
+                    <p style={{ margin: '0 0.5rem', color: '#202223' }}>Server Status:</p>
+                    <Badge tone={backendStatus === 'Online' ? 'success' : 'critical'} progress={backendStatus === 'Online' ? 'complete' : 'incomplete'}>
+                        {backendStatus}
+                    </Badge>
+                </div>
+            </div>
         </Navigation>
     );
 
     const pageContent = {
         home: <p>Esta es la página de inicio.</p>,
-        orders: <OrdersIndexTable />, // Vista de Órdenes integrada
+        orders: <OrdersPage />, // Vista de Órdenes integrada
         packages: <p>Esta es la página de Paquetes.</p>,
         products: <p>Esta es la página de Productos.</p>,
         reports: <p>Esta es la página de Reportes.</p>,
         trackingPage: <p>Esta es la página de Seguimiento.</p>,
+        status: <p>Esta es la página de Status</p>,
     };
 
     return (
@@ -184,6 +229,9 @@ function App() {
                 logo={logoMarkup}
             >
                 <Page title={selected.toUpperCase()}>{pageContent[selected]}</Page>
+                {toastProps.active && (
+                    <Toast content={toastProps.content} error={toastProps.error} onDismiss={handleToastDismiss} />
+                )}
             </Frame>
         </AppProvider>
     );
