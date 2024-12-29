@@ -1,53 +1,62 @@
 {
-  "hash": "d6723319",
+  "hash": "397d32ff",
   "configHash": "96c85f62",
-  "lockfileHash": "a693818e",
-  "browserHash": "142863bd",
+  "lockfileHash": "78acdd10",
+  "browserHash": "f9436ade",
   "optimized": {
     "react": {
       "src": "../../node_modules/react/index.js",
       "file": "react.js",
-      "fileHash": "96cf5489",
+      "fileHash": "2100bc30",
       "needsInterop": true
     },
     "react-dom": {
       "src": "../../node_modules/react-dom/index.js",
       "file": "react-dom.js",
-      "fileHash": "fd2e475a",
+      "fileHash": "0d5584db",
       "needsInterop": true
     },
     "react/jsx-dev-runtime": {
       "src": "../../node_modules/react/jsx-dev-runtime.js",
       "file": "react_jsx-dev-runtime.js",
-      "fileHash": "ed770dc3",
+      "fileHash": "c0108917",
       "needsInterop": true
     },
     "react/jsx-runtime": {
       "src": "../../node_modules/react/jsx-runtime.js",
       "file": "react_jsx-runtime.js",
-      "fileHash": "3fdb4fcd",
+      "fileHash": "09b2bde5",
       "needsInterop": true
     },
     "@shopify/polaris": {
       "src": "../../node_modules/@shopify/polaris/build/esm/index.js",
       "file": "@shopify_polaris.js",
-      "fileHash": "04ae1ba5",
+      "fileHash": "98b1b183",
       "needsInterop": false
     },
     "@shopify/polaris-icons": {
       "src": "../../node_modules/@shopify/polaris-icons/dist/index.mjs",
       "file": "@shopify_polaris-icons.js",
-      "fileHash": "e0591669",
+      "fileHash": "dfc7aeaf",
       "needsInterop": false
     },
     "react-dom/client": {
       "src": "../../node_modules/react-dom/client.js",
       "file": "react-dom_client.js",
-      "fileHash": "cc6b13ca",
+      "fileHash": "693f11a4",
       "needsInterop": true
+    },
+    "@emotion/react": {
+      "src": "../../node_modules/@emotion/react/dist/emotion-react.browser.development.esm.js",
+      "file": "@emotion_react.js",
+      "fileHash": "8fab4213",
+      "needsInterop": false
     }
   },
   "chunks": {
+    "chunk-RAN7GE2L": {
+      "file": "chunk-RAN7GE2L.js"
+    },
     "chunk-S4CVHYIU": {
       "file": "chunk-S4CVHYIU.js"
     },

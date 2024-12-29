@@ -193,17 +193,18 @@ function App() {
             {/* Footer del menú para el estado del servidor */}
             <div
                 style={{
-                    marginTop: 'auto',
+                    width: '100%', // Asegura que el div ocupe todo el ancho
                     padding: '1rem',
                     textAlign: 'center',
                     borderTop: '1px solid #e0e0e0',
                     backgroundColor: '#f9fafb',
+                    marginTop: 'auto', // Empuja el footer hacia abajo
                 }}
             >
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <Icon source={DatabaseIcon} />
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Icon source={DatabaseIcon} style={{ marginRight: '0.5rem' }} />
                     <p style={{ margin: '0 0.5rem', color: '#202223' }}>Server Status:</p>
-                    <Badge tone={backendStatus === 'Online' ? 'success' : 'critical'} progress={backendStatus === 'Online' ? 'complete' : 'incomplete'}>
+                    <Badge tone={backendStatus === 'Online' ? 'success' : (backendStatus === 'Offline' ? 'critical' : 'subdued')} progress={backendStatus === 'Online' ? 'complete' : (backendStatus === 'Offline' ? 'incomplete' : undefined)}>
                         {backendStatus}
                     </Badge>
                 </div>
@@ -238,3 +239,4 @@ function App() {
 }
 
 export default App;
+             
