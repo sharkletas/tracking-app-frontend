@@ -1,13 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Page, Layout, Button, Icon, Tabs, Spinner, SkeletonPage, SkeletonBodyText, SkeletonDisplayText } from '@shopify/polaris';
-import { RefreshIcon } from '@shopify/polaris-icons';
+import { Page, Layout, Button, Icon, Tabs, Spinner, SkeletonPage, SkeletonBodyText, SkeletonDisplayText, Modal } from '@shopify/polaris';
+import { RefreshIcon, LayoutColumns3Icon, DataTableIcon } from '@shopify/polaris-icons';
 import OrdersIndexTable from './OrdersIndexTable';
 import KanbanBoard from './KanbanBoard';
+import OrderDetails from './OrderDetails';
 
 const OrdersPage = () => {
   const [isSyncing, setIsSyncing] = useState(false);
   const [selectedView, setSelectedView] = useState(0); // 0 para IndexTable, 1 para KanbanBoard
   const [orders, setOrders] = useState([]);
+  const [showOrderDetails, setShowOrderDetails] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   const handleSyncOrders = useCallback(async () => {
     setIsSyncing(true);
@@ -44,17 +47,33 @@ const OrdersPage = () => {
     }
   }, []);
 
+  // Función para mostrar el modal de detalles de la orden
+  const showOrderDetailsModal = (order) => {
+    setSelectedOrder(order);
+    setShowOrderDetails(true);
+  };
+
   const viewTabs = [
     {
       id: 'table-view',
-      content: 'Vista de Tabla',
-      accessibilityLabel: 'Vista de Tabla',
+      content: (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Icon source={DataTableIcon} />
+          <span style={{ marginLeft: '8px' }}>Tabla</span>
+        </div>
+      ),
+      accessibilityLabel: 'Tabla',
       panelID: 'table-view-content',
     },
     {
       id: 'kanban-view',
-      content: 'Vista Kanban',
-      accessibilityLabel: 'Vista Kanban',
+      content: (
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <Icon source={LayoutColumns3Icon} />
+          <span style={{ marginLeft: '8px' }}>Kanban</span>
+        </div>
+      ),
+      accessibilityLabel: 'Kanban',
       panelID: 'kanban-view-content',
     },
   ];
@@ -85,7 +104,7 @@ const OrdersPage = () => {
                     <SkeletonBodyText lines={3} />
                   </SkeletonPage>
                 ) : (
-                  <OrdersIndexTable isSyncing={isSyncing} orders={orders} />
+                  <OrdersIndexTable isSyncing={isSyncing} orders={orders} onShowOrderDetails={showOrderDetailsModal} />
                 )
               ) : (
                 <KanbanBoard isSyncing={isSyncing} orders={orders} />
@@ -94,7 +113,19 @@ const OrdersPage = () => {
           </Tabs>
           {isSyncing && <div style={{ textAlign: 'center', marginTop: '20px' }}><Spinner size="large" /></div>}
         </Layout.Section>
-      </Layout>
+      </Layout>      
+        {showOrderDetails && (
+          <Modal
+            open={showOrderDetails}
+            onClose={() => setShowOrderDetails(false)}
+            title={`Detalles de la Orden #${selectedOrder ? selectedOrder.shopifyOrderNumber : ''}`}
+            large
+          >
+            <Modal.Section>
+              <OrderDetails order={selectedOrder} onClose={() => setShowOrderDetails(false)} />
+            </Modal.Section>
+          </Modal>
+        )}
     </Page>
   );
 };

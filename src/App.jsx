@@ -229,14 +229,15 @@ function App() {
                 navigation={navigationMarkup}
                 logo={logoMarkup}
             >
-                <Page title={selected.toUpperCase()}>{pageContent[selected]}</Page>
-                {toastProps.active && (
-                    <Toast content={toastProps.content} error={toastProps.error} onDismiss={handleToastDismiss} />
-                )}
+                <Page title={selected === 'orders' ? '' : selected.toUpperCase()}>
+                    {pageContent[selected]}
+                </Page>
+                    {toastProps.active && (
+                        <Toast content={toastProps.content} error={toastProps.error} onDismiss={handleToastDismiss} />
+                    )}
             </Frame>
         </AppProvider>
     );
 }
 
 export default App;
-             

@@ -14,8 +14,7 @@ import {
 } from '@shopify/polaris';
 import { DeleteIcon } from '@shopify/polaris-icons';
 
-function OrdersIndexTable({ orders = [], isSyncing }) {
-  // Establecer un valor por defecto para sortValue
+function OrdersIndexTable({ orders = [], isSyncing, onShowOrderDetails }) {
   const [selectedTab, setSelectedTab] = useState(0);
   const [filterQuery, setFilterQuery] = useState({ orderType: '', paymentStatus: '' });
   const [currentPage, setCurrentPage] = useState(1);
@@ -84,7 +83,7 @@ function OrdersIndexTable({ orders = [], isSyncing }) {
     useIndexResourceState(paginatedRows);
 
   const rowMarkup = paginatedRows.map(
-    ({ _id, shopifyOrderNumber, createdAt, shopifyOrderLink, paymentStatus, orderType, trackingInfo, productStatus }, index) => (
+    ({ _id, shopifyOrderNumber, createdAt, shopifyOrderLink, paymentStatus, orderType, trackingInfo, fulfillmentStatus }, index) => (
       <IndexTable.Row
         id={_id}
         key={_id}
@@ -92,13 +91,22 @@ function OrdersIndexTable({ orders = [], isSyncing }) {
         position={index}
       >
         <IndexTable.Cell>
-          <a
-            href={shopifyOrderLink}
-            target="_blank"
-            rel="noopener noreferrer"
+          <span 
+            style={{ cursor: 'pointer', color: '#0073b6', textDecoration: 'underline' }}
+            onClick={() => onShowOrderDetails({ 
+              _id,
+              shopifyOrderNumber,
+              paymentStatus,
+              orderType,
+              shopifyOrderLink,
+              createdAt,
+              trackingInfo,
+              fulfillmentStatus,
+              // Asegúrate de incluir cualquier otro campo necesario para OrderDetails
+            })}
           >
             {shopifyOrderNumber}
-          </a>
+          </span>
         </IndexTable.Cell>
         <IndexTable.Cell>{new Date(createdAt).toLocaleDateString()}</IndexTable.Cell>
         <IndexTable.Cell>
@@ -132,11 +140,7 @@ function OrdersIndexTable({ orders = [], isSyncing }) {
         </IndexTable.Cell>
         <IndexTable.Cell>{trackingInfo.orderTracking ? trackingInfo.orderTracking.trackingNumber || 'No asignado' : 'No asignado'}</IndexTable.Cell>
         <IndexTable.Cell>
-          {(productStatus || []).map((status, i) => (
-            <Badge key={i} status="info" style={{ marginRight: '5px' }}>
-              {status}
-            </Badge>
-          ))}
+          {fulfillmentStatus.status}
         </IndexTable.Cell>
       </IndexTable.Row>
     )
@@ -203,6 +207,7 @@ function OrdersIndexTable({ orders = [], isSyncing }) {
     { field: 'paymentStatus', label: 'Estado de Pago' },
     { field: 'orderType', label: 'Tipo de Orden' },
     { field: 'trackingInfo.orderTracking.trackingNumber', label: 'Número de Rastreo' },
+    { field: 'fulfillmentStatus.status', label: 'Estado de Fulfillment' }
   ];
 
   return (
@@ -269,7 +274,7 @@ function OrdersIndexTable({ orders = [], isSyncing }) {
               { title: 'Estado de Pago', sortable: true, sortValue: 'paymentStatus:asc' },
               { title: 'Tipo de Orden', sortable: true, sortValue: 'orderType:asc' },
               { title: 'Número de Rastreo', sortable: true, sortValue: 'trackingInfo.orderTracking.trackingNumber:asc' },
-              { title: 'Status de Productos' },
+              { title: 'Estado de Fulfillment', sortable: true, sortValue: 'fulfillmentStatus.status:asc' },
             ]}
             pagination={{
               hasNext: currentPage < totalPages,
